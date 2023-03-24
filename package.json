@@ -2,32 +2,49 @@
   "name": "playwright.dev",
   "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
-    "postinstall": "cd third_party/docusaurus-search-local && npm i && npm run build",
+    "postinstall": "npm run build-analytics-plugin",
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
-    "roll": "rm -rf nodejs/docs/* && rm -rf python/docs/* && node src/generator.js",
+    "swizzle": "docusaurus swizzle",
+    "clear": "docusaurus clear",
+    "sync-upstream-scripts": "node src/sync_upstream_scripts.js",
+    "roll": "rm -rf nodejs/docs/* && rm -rf python/docs/* && rm -rf java/docs/* && rm -rf dotnet/docs/* && npm run sync-upstream-scripts && node src/generate.js",
+    "start-dotnet": "concurrently \"node src/generate.js --watch csharp\" \"npm run start\"",
+    "start-java": "concurrently \"node src/generate.js --watch java\" \"npm run start\"",
+    "start-nodejs": "concurrently \"node src/generate.js --watch js\" \"npm run start\"",
+    "start-python": "concurrently \"node src/generate.js --watch python\" \"npm run start\"",
+    "prepare-dotnet": "npm run cleanup && cp -r dotnet/* .",
+    "prepare-java": "npm run cleanup && cp -r java/* .",
     "prepare-nodejs": "npm run cleanup && cp -r nodejs/* .",
     "prepare-python": "npm run cleanup && cp -r python/* .",
-    "build-nodejs": "npm run cleanup && cp -r nodejs/* . && node --max-old-space-size=4096 node_modules/@docusaurus/core/bin/docusaurus build --out-dir=build",
-    "build-python": "npm run cleanup && cp -r python/* . && node --max-old-space-size=4096 node_modules/@docusaurus/core/bin/docusaurus build --out-dir=build/python",
-    "build": "rm -rf build && npm run build-nodejs && npm run build-python",
-    "version-node": "npm run prepare-nodejs && docusaurus docs:version 1.8.0 && cp -r docs/* nodejs/docs/ && cp -r versioned_docs/* nodejs/versioned_docs/ && cp -r versioned_sidebars/* nodejs/versioned_sidebars/ && cp versions.json nodejs/",
-    "version-python": "npm run prepare-python && docusaurus docs:version 1.8.0 && cp -r docs/* python/docs/ && cp -r versioned_docs/* python/versioned_docs/ && cp -r versioned_sidebars/* python/versioned_sidebars/ && cp versions.json python/",
+    "build-nodejs": "npm run cleanup && cp -r nodejs/* . && node --max-old-space-size=4096 node_modules/.bin/docusaurus build --out-dir=build",
+    "build-python": "npm run cleanup && cp -r python/* . && node --max-old-space-size=4096 node_modules/.bin/docusaurus build --out-dir=build/python",
+    "build-java": "npm run cleanup && cp -r java/* . && node --max-old-space-size=4096 node_modules/.bin/docusaurus build --out-dir=build/java",
+    "build-dotnet": "npm run cleanup && cp -r dotnet/* . && node --max-old-space-size=4096 node_modules/.bin/docusaurus build --out-dir=build/dotnet",
+    "build": "rm -rf build && npm run build-nodejs && npm run build-python && npm run build-java && npm run build-dotnet",
+    "version-dotnet": "npm run prepare-dotnet && docusaurus docs:version stable && cp -r docs/* dotnet/docs/ && cp -r versioned_docs/* dotnet/versioned_docs/ && cp -r versioned_sidebars/* dotnet/versioned_sidebars/ && cp versions.json dotnet/",
+    "version-java": "npm run prepare-java && docusaurus docs:version stable && cp -r docs/* java/docs/ && cp -r versioned_docs/* java/versioned_docs/ && cp -r versioned_sidebars/* java/versioned_sidebars/ && cp versions.json java/",
+    "version-node": "npm run prepare-nodejs && docusaurus docs:version stable && cp -r docs/* nodejs/docs/ && cp -r versioned_docs/* nodejs/versioned_docs/ && cp -r versioned_sidebars/* nodejs/versioned_sidebars/ && cp versions.json nodejs/",
+    "version-python": "npm run prepare-python && docusaurus docs:version stable && cp -r docs/* python/docs/ && cp -r versioned_docs/* python/versioned_docs/ && cp -r versioned_sidebars/* python/versioned_sidebars/ && cp versions.json python/",
     "cleanup": "rm -rf docs versioned_docs versioned_sidebars docusaurus.config.js versions.json sidebars.js",
-    "serve": "docusaurus serve"
+    "version-all": "npm run version-python && npm run version-node && npm run version-java && npm run version-dotnet",
+    "serve": "docusaurus serve",
+    "build-analytics-plugin": "tsc -p plugins/playwright-analytics-integration/tsconfig.json"
   },
   "dependencies": {
-    "@docusaurus/core": "2.0.0-alpha.70",
-    "@docusaurus/plugin-content-docs": "^2.0.0-alpha.70",
-    "@docusaurus/preset-classic": "2.0.0-alpha.70",
-    "@easyops-cn/docusaurus-search-local": "0.14.2",
-    "clsx": "^1.1.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "semver": "^7.3.4",
-    "shelljs": "^0.8.4",
-    "slugify": "^1.4.6"
+    "@docusaurus/core": "2.3.1",
+    "@docusaurus/plugin-content-docs": "2.3.1",
+    "@docusaurus/preset-classic": "2.3.1",
+    "@docusaurus/types": "^2.3.1",
+    "clsx": "^1.2.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-lite-youtube-embed": "^2.3.52",
+    "react-loadable": "^5.5.0"
   },
   "browserslist": {
     "production": [
@@ -42,10 +59,19 @@
     ]
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^2.0.0-alpha.70",
-    "@tsconfig/docusaurus": "^1.0.2",
-    "@types/react": "^17.0.0",
-    "@types/react-router-dom": "^5.1.7",
-    "typescript": "^4.1.3"
+    "@docusaurus/module-type-aliases": "2.3.1",
+    "@playwright/test": "^1.31.2",
+    "@tsconfig/docusaurus": "^1.0.6",
+    "@types/node": "^16.18.10",
+    "@types/react": "^17.0.52",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/rimraf": "^3.0.2",
+    "chokidar": "^3.5.3",
+    "concurrently": "^7.6.0",
+    "esbuild-loader": "3.0.1",
+    "http-server": "^14.1.1",
+    "lodash": "^4.17.21",
+    "rimraf": "^4.3.1",
+    "typescript": "^4.9.5"
   }
 }

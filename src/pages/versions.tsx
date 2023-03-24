@@ -2,7 +2,10 @@ import React from 'react';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 
-import { useVersions, useLatestVersion } from '@theme/hooks/useDocs';
+import {
+  useVersions,
+  useLatestVersion,
+} from '@docusaurus/plugin-content-docs/client';
 
 const Version: React.FC = () => {
   const versions = useVersions();
@@ -33,7 +36,7 @@ const Version: React.FC = () => {
                     <Link to={stableVersion.path + '/api/class-playwright'}>Documentation</Link>
                   </td>
                   <td>
-                    <a href={`${repoUrl}/releases/tag/v${stableVersion.name}`}>
+                    <a href={`${repoUrl}/releases/tag/v${stableVersion.name}.0`}>
                       Release Notes
                     </a>
                   </td>
@@ -73,7 +76,7 @@ const Version: React.FC = () => {
                       <Link to={version.path + '/api/class-playwright'}>Documentation</Link>
                     </td>
                     <td>
-                      <a href={`${repoUrl}/releases/tag/v${version.name}`}>
+                      <a href={`${repoUrl}/releases/tag/v${version.name}.0`}>
                         Release Notes
                       </a>
                     </td>

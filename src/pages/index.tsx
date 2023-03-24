@@ -4,63 +4,116 @@ import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import useBaseUrl from "@docusaurus/useBaseUrl";
+import GitHubStarButton from '../components/GitHubStarButton';
 import styles from "./styles.module.css";
 
 const features = [
   {
-    title: "Test across all modern browsers",
-    description: <>Single API to automate Chromium, Firefox and WebKit.</>,
-    link: "docs/why-playwright#support-for-all-browsers",
-  },
-  {
-    title: "Automate without trade-offs",
-    description: (
-      <>
-        Capable automation for single page apps that rely on the modern web
-        platform.
-      </>
-    ),
-    link: "docs/why-playwright#powerful-automation-capabilities",
-  },
-  {
-    title: "Use in your preferred language",
-    description: (
-      <>
-        Use the Playwright API in <a
-        href="https://playwright.dev">JavaScript &amp; TypeScript</a>, <a
+    title: "Any browser \u2022 Any platform \u2022 One API",
+    description: <>
+      <p>
+        <b>Cross-browser.</b> Playwright supports all modern rendering engines including Chromium, WebKit, and Firefox.
+      </p>
+      <p>
+        <b>Cross-platform.</b> Test on Windows, Linux, and macOS, locally or on CI, headless or headed.
+      </p>
+      <p>
+        <b>Cross-language.</b> Use the Playwright API in <a
+        href="https://playwright.dev/docs/intro">TypeScript</a>, <a
+        href="https://playwright.dev/docs/intro">JavaScript</a>, <a
         href="https://playwright.dev/python/docs/intro">Python</a>, <a
-        href="https://github.com/microsoft/playwright-sharp">C#</a> and, <a
-        href="https://github.com/microsoft/playwright-java">Java</a>.
+        href="https://playwright.dev/dotnet/docs/intro">.NET</a>, <a
+        href="https://playwright.dev/java/docs/intro">Java</a>.
+      </p>
+      <p>
+        <b>Test Mobile Web.</b> Native mobile emulation of Google Chrome for Android and Mobile Safari. The same rendering engine works on your Desktop and in the Cloud.
+      </p>
+    </>,
+  },
+  {
+  },
+  {
+  },
+  {
+    title: "Resilient \u2022 No flaky tests",
+    description: (
+      <>
+        <p>
+          <b>Auto-wait.</b> Playwright waits for elements to be actionable prior to performing
+          actions. It also has a rich set of introspection events. The combination of the two
+          eliminates the need for artificial timeouts - the primary cause of flaky tests.
+        </p>
+        <p>
+          <b>Web-first assertions.</b> Playwright assertions are created specifically for the
+          dynamic web. Checks are automatically retried until the necessary conditions are met.
+        </p>
+        <p>
+          <b>Tracing.</b> Configure test retry strategy, capture execution trace, videos, screenshots
+          to eliminate flakes.
+        </p>
       </>
     ),
-    link: "docs/languages",
-  },
-];
-
-const videoRows = [
-  {
-    title: "Get started instantly",
-    description:
-      "Install Playwright and browsers with a single command – on local and CI environments. Then use the API to launch browsers, create pages, and automate page interactions.",
-    videoUrl: "img/gifs/intro.mp4",
   },
   {
-    title: "Reliably automate with auto-waits",
-    description:
-      "Actions, like clicks, auto-wait for UI elements to ensure your scripts are reliable to execute. Wait for precise events for more control and say goodbye to timeouts.",
-    videoUrl: "img/gifs/auto-wait.mp4",
+    title: "No trade-offs \u2022 No limits",
+    description: (
+      <>
+        <p>
+          Browsers run web content belonging to different origins in different processes.
+          Playwright is aligned with the modern browsers architecture and runs tests out-of-process.
+          This makes Playwright free of the typical in-process test runner limitations.
+        </p>
+        <p>
+          <b>Multiple everything.</b> Test scenarios that span multiple <b>tabs</b>, multiple <b>origins</b> and multiple <b>users</b>.
+          Create scenarios with different contexts for different users and run them against your server, all in one test.
+        </p>
+        <p>
+          <b>Trusted events.</b> Hover elements, interact with dynamic controls, produce trusted events.
+          Playwright uses real browser input pipeline indistinguishable from the real user.
+        </p>
+        <p>
+          <b>Test frames, pierce Shadow DOM.</b> Playwright selectors pierce shadow DOM and
+          allow entering frames seamlessly.
+        </p>
+      </>
+    ),
   },
   {
-    title: "Intercept network activity",
-    description:
-      "Playwright can intercept network activity to modify or mock network requests during test scenarios.",
-    videoUrl: "img/gifs/network.mp4",
   },
   {
-    title: "Run multi-page emulation scenarios",
-    description:
-      "A single browser instance in Playwright can create multiple isolated browser contexts. Each browser context can run multi-page emulation scenarios.",
-    videoUrl: "img/gifs/contexts.mp4",
+  },
+  {
+    title: "Full isolation \u2022 Fast execution",
+    description: (
+      <>
+        <p>
+          <b>Browser contexts.</b> Playwright creates a browser context for each test. Browser
+          context is equivalent to a brand new browser profile. This delivers full test isolation
+          with zero overhead. Creating a new browser context only takes a handful of milliseconds.
+        </p>
+        <p>
+          <b>Log in once.</b> Save the authentication state of the context and reuse it in all the tests.
+          This bypasses repetitive log-in operations in each test, yet delivers full isolation of independent tests.
+        </p>
+      </>
+    ),
+  },
+  {
+    title: "Powerful Tooling",
+    description: (
+      <>
+        <p>
+          <b>Codegen.</b> Generate tests by recording your actions. Save them into any language.
+        </p>
+        <p>
+          <b>Playwright inspector.</b> Inspect page, generate selectors, step through the test execution, see click points, explore execution logs.
+        </p>
+        <p>
+          <b>Trace Viewer.</b> Capture all the information to investigate the test failure. Playwright trace
+          contains test execution screencast, live DOM snapshots, action explorer, test source, and many more.
+        </p>
+      </>
+    ),
   },
 ];
 
@@ -74,7 +127,7 @@ type FeatureProps = {
 const Feature: React.FC<FeatureProps> = ({ imageUrl, title, description, link }) => {
   const imgUrl = useBaseUrl(imageUrl);
   return (
-    <div className={clsx("col col--4", styles.feature)}>
+    <div className={clsx("col col--6", styles.feature)} style={{ marginTop: 40 }}>
       {imgUrl && (
         <div className="text--center">
           <img className={styles.featureImage} src={imgUrl} alt={title} />
@@ -82,23 +135,6 @@ const Feature: React.FC<FeatureProps> = ({ imageUrl, title, description, link })
       )}
       <h3>{title}</h3>
       <p>{description}</p>
-      <p>
-        <Link to={useBaseUrl(link)}>Learn more</Link>
-      </p>
-    </div>
-  );
-}
-
-const GitHubStars: React.FC = () => {
-  return (
-    <div style={{ height: 30 }}>
-      <iframe
-        className={styles.githubStars}
-        src="https://ghbtns.com/github-btn.html?user=microsoft&amp;repo=playwright&amp;type=star&amp;count=true&amp;size=large"
-        width={160}
-        height={30}
-        title="GitHub Stars"
-      />
     </div>
   );
 }
@@ -190,11 +226,17 @@ const Home: React.FC = () => {
             >
               Get started
             </Link>
-            <GitHubStars />
+            <GitHubStarButton owner="microsoft" repo={siteConfig.customFields.repositoryName}/>
           </div>
         </div>
       </header>
+      <br></br>
       <main>
+        <br></br>
+        <br></br>
+        <center>
+          <img src="img/logos/Browsers.png" width="40%"></img>
+        </center>
         <section className={styles.features}>
           <div className="container">
             <div className="row">
@@ -223,10 +265,6 @@ const Home: React.FC = () => {
             </div>
           </div>
         </section>
-
-        {videoRows.map((row, idx) => (
-          <FeatureRow {...row} key={idx} isImageLeft={idx % 2 === 1} />
-        ))}
       </main>
     </Layout>
   );

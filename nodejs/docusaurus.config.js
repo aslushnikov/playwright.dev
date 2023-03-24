@@ -1,22 +1,36 @@
 const path = require("path");
 const isProd = process.env.NODE_ENV === "production";
 
+const hasStableVersion = require(path.join(__dirname, 'nodejs/versions.json')).includes('stable');
+
 let plugins = [
   [
     require.resolve("@docusaurus/plugin-content-docs"),
     {
       sidebarPath: require.resolve("./sidebars.js"),
+      // Docusaurus crashes if we don't have a stable version and run docusaurus commands.
+      // This is a workaround to make it work since during roll we temporarily remove the stable version.
+      ...(hasStableVersion ? {
+        versions: {
+          stable: {
+            badge: false,
+          }
+        }
+      } : {}),
     },
   ],
   [
-    require.resolve("@docusaurus/plugin-content-blog"),
-    {
-      showReadingTime: true,
-      editUrl:
-        "https://github.com/microsoft/playwright.dev/edit/master/v2/blog/",
-    },
+    'content-docs',
+    /** @type {import('@docusaurus/plugin-content-docs').Options} */
+    ({
+      id: 'community',
+      path: 'community',
+      routeBasePath: 'community',
+      sidebarPath: require.resolve('./sidebarCommunity.js'),
+    }),
   ],
   require.resolve("@docusaurus/plugin-content-pages"),
+  require.resolve("./plugins/playwright-analytics-integration/lib/index.js"),
 ];
 
 if (isProd) {
@@ -33,11 +47,17 @@ module.exports = {
   projectName: "playwright.dev",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "throw",
-  scripts: ["js/redirection.js"],
+  scripts: ["/js/redirection.js"],
   favicon: "img/playwright-logo.svg",
   themeConfig: {
     colorMode: {
       defaultMode: "dark",
+      respectPrefersColorScheme: true,
+    },
+    prism: {
+      theme: require('./src/config/prismLight'),
+      darkTheme: require('./src/config/prismDark'),
+      additionalLanguages: ['bash', 'batch', 'powershell'],
     },
     navbar: {
       title: "Playwright",
@@ -58,6 +78,7 @@ module.exports = {
           label: "API",
           position: "left",
         },
+
         {
           href: "https://github.com/microsoft/playwright",
           position: "right",
@@ -65,13 +86,36 @@ module.exports = {
           "aria-label": "GitHub repository",
         },
         {
-          type: "docsVersionDropdown",
-          position: "left",
-          // Add additional dropdown items at the beginning/end of the dropdown.
-          dropdownItemsBefore: [],
-          dropdownItemsAfter: [{ to: "/versions", label: "All versions" }],
-          // Do not add the link active class when browsing docs.
-          dropdownActiveClassDisabled: true,
+          label: 'Node.js',
+          position: 'left',
+          items: [
+            {
+              label: 'Node.js',
+              'data-language-prefix': '/',
+              href: '#',
+            },
+            {
+              label: 'Python',
+              'data-language-prefix': '/python/',
+              href: '#',
+            },
+            {
+              label: 'Java',
+              'data-language-prefix': '/java/',
+              href: '#',
+            },
+            {
+              label: '.NET',
+              'data-language-prefix': '/dotnet/',
+              href: '#',
+            },
+          ],
+        },
+        {
+          to: '/community/welcome',
+          label: 'Community',
+          position: 'left',
+          activeBaseRegex: `/community/`,
         },
       ],
     },
@@ -99,8 +143,8 @@ module.exports = {
               href: "https://stackoverflow.com/questions/tagged/playwright",
             },
             {
-              label: "Slack",
-              href: "https://aka.ms/playwright-slack",
+              label: "Discord",
+              href: "https://aka.ms/playwright/discord",
             },
             {
               label: "Twitter",
@@ -115,11 +159,25 @@ module.exports = {
               label: "GitHub",
               href: "https://github.com/microsoft/playwright",
             },
+            {
+              label: "YouTube",
+              href: "https://www.youtube.com/channel/UC46Zj8pDH5tDosqm1gd7WTg",
+            },
+            {
+              label: "Conference videos",
+              href: "/community/conference-videos",
+            },
           ],
         },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Microsoft`,
-    }
+    },
+    algolia: {
+      indexName: 'playwright-nodejs',
+      appId: 'K09ICMCV6X',
+      apiKey: 'a5b64422711c37ab6a0ce4d86d16cdd9',
+    },
+    image: 'https://repository-images.githubusercontent.com/221981891/8c5c6942-c91f-4df1-825f-4cf474056bd7',
   },
   themes: [
     [
@@ -128,17 +186,20 @@ module.exports = {
         customCss: require.resolve("./src/css/custom.css"),
       },
     ],
-    [
-      require.resolve(
-        "./third_party/docusaurus-search-local/dist/server/server/index"
-      ),
-      {
-        hashed: true,
-        language: ["en"],
-        searchResultLimits: 10,
-        highlightSearchTermsOnTargetPage: true,
-      },
-    ],
+    '@docusaurus/theme-search-algolia',
   ],
   plugins,
+  customFields: {
+    repositoryName: "playwright",
+  },
+  trailingSlash: false,
+  webpack: {
+    jsLoader: (isServer) => ({
+      loader: require.resolve('esbuild-loader'),
+      options: {
+        loader: 'tsx',
+        target: isServer ? 'node12' : 'es2017',
+      },
+    }),
+  }
 };

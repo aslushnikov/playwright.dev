@@ -18,7 +18,12 @@ node_modules
 # build
 /docs
 /sidebars.js
+/sidebarCommunity.js
 /versioned_docs
 /versioned_sidebars
 /versions.json
 /docusaurus.config.js
+/playwright/
+/test-results/
+/playwright-report/
+/playwright/.cache/
